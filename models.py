@@ -17,17 +17,6 @@ class Product(BaseModel):
     weight = IntegerField() 
     image = CharField()
 
-    def serialisation(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'price': self.price,
-            'in_stock': self.in_stock,
-            'weight': self.weight,
-            'image': self.image
-        }
-
 class Order(BaseModel):
     id = AutoField()
     total_price = FloatField(null=True)
@@ -51,44 +40,13 @@ class Order(BaseModel):
     transaction_success = BooleanField(null=True)
     transaction_amount = FloatField(null=True)
 
-    def serialisation(self):
-        return {
-            'id': self.id,
-            'total_price': self.total_price,
-            'total_price_tax': self.total_price_tax,
-            'email': self.email,
-            'shipping_information': None if not self.shipping_country else {
-                'country': self.shipping_country,
-                'address': self.shipping_address,
-                'postal_code': self.shipping_postal_code,
-                'city': self.shipping_city,
-                'province': self.shipping_province
-            },
-            'credit_card': None if not self.credit_card_name else {
-                'name': self.credit_card_name,
-                'first_digits': self.credit_card_first_digits,
-                'last_digits': self.credit_card_last_digits,
-                'expiration_year': self.credit_card_expiration_year,
-                'expiration_month': self.credit_card_expiration_month
-            },
-            'paid': self.paid,
-            'transaction': None if not self.transaction_id else {
-                'id': self.transaction_id,
-                'success': self.transaction_success,
-                'amount_charged': self.transaction_amount
-            },
-            'product': {
-                'id': self.product_id,
-                'quantity': self.quantity
-            },
-            'shipping_price': self.shipping_price
-        }
     
 # Récuperation des données et initialisation de la base de donnée 
 def initialisation():
     db.connect()
     db.create_tables([Product, Order], safe=True)
-    # Charger les produits au démarrage si la table est vide
+    
+    # Chargement des produits 
     if Product.select().count() == 0:
         response = requests.get('http://dimensweb.uqac.ca/~jgnault/shops/products/')
         if response.status_code == 200:

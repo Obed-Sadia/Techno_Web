@@ -6,9 +6,14 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/.."))
 from inf349 import app, db, Product, Order
 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEST_DB_PATH = os.path.join(BASE_DIR, 'data', 'test_data.db')
+
 @pytest.fixture
 def client():
-    db.init('data/test_data.db')
+    os.makedirs(os.path.dirname(TEST_DB_PATH), exist_ok=True)
+    db.init(TEST_DB_PATH)
     with db:
         db.drop_tables([Product, Order])
         db.create_tables([Product, Order], safe=True)
@@ -88,15 +93,13 @@ def test_update_order_shipping(client):
         order_id = order.id
     response = client.put(f'/order/{order_id}',
         data=json.dumps({
-            'order': {
-                'email': 'test@example.com',
-                'shipping_information': {
-                    'country': 'Canada',
-                    'address': '123 Rue Test',
-                    'postal_code': 'H0H0H0',
-                    'city': 'Testville',
-                    'province': 'QC'
-                }
+            'email': 'test@example.com',
+            'shipping_information': {
+                'country': 'Canada',
+                'address': '123 Rue Test',
+                'postal_code': 'H0H0H0',
+                'city': 'Testville',
+                'province': 'QC'
             }
         }),
         content_type='application/json'
@@ -119,7 +122,7 @@ def test_update_order_payment(client, mocker):
         'credit_card': {'name': 'John Doe', 'first_digits': '4242', 'last_digits': '4242', 'expiration_year': 2025, 'expiration_month': 12},
         'transaction': {'id': 'test-transaction-123', 'success': True, 'amount_charged': (28.1 + 5) * 1.15}
     }
-    response = client.put(f'/order/{order_id}',
+    response = client.put(f'/order/{order_id}/pay',
         data=json.dumps({
             'credit_card': {'name': 'John Doe', 'number': '4242424242424242', 'expiration_year': 2025, 'cvv': '123', 'expiration_month': 12}
         }),
