@@ -94,7 +94,7 @@ def get_order(order_id):
         order = Order.get_or_none(Order.id == order_id)
         if not order:
             return '', HTTPStatus.NOT_FOUND
-        product = Product.get(Product.id == order.product_id)
+        product = Product.get(Product.id == order.product_id) 
         return jsonify({
             'order': {
                 'id': order.id,

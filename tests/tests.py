@@ -6,17 +6,9 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/.."))
 from inf349 import app, db, Product, Order
 
-import pytest
-import json
-import sys
-import os
-
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/.."))
-from inf349 import app, db, Product, Order
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEST_DB_PATH = os.path.join(BASE_DIR, '../', 'test_data.db')
+TEST_DB_PATH = os.path.join(BASE_DIR, '../data', 'test_data.db')
 
 @pytest.fixture
 def client():
